@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 
 # Credit where credit is due...
@@ -29,7 +29,8 @@ def get_host_data(root):
         addr_info = []
 
         # Ignore hosts that are not 'up'
-        if not host.findall('status')[0].attrib['state'] == 'up':
+        status_element = host.findall('status')
+        if not status_element[0].attrib['state'] == 'up':
             continue
         
         # Get IP address and host info. If no hostname, then ''
@@ -62,7 +63,7 @@ def get_host_data(root):
 
                 if args.udp_open:
                     # Display both open ports and open}filtered ports
-                    if not 'open' in port.findall('state')[0].attrib['state']:
+                    if 'open' not in port.findall('state')[0].attrib['state']:
                         continue
                 else:
                     # Ignore ports that are not 'open'
@@ -72,10 +73,7 @@ def get_host_data(root):
                 proto = port.attrib['protocol']
                 port_id = port.attrib['portid']
                 service = port.findall('service')[0].attrib['name']
-                try:
-                    product = port.findall('service')[0].attrib['product']
-                except (IndexError, KeyError):
-                    product = ''      
+                product = port.findall('service')[0].attrib.get('product', '')
                 try:
                     servicefp = port.findall('service')[0].attrib['servicefp']
                 except (IndexError, KeyError):
